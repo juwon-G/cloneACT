@@ -1,0 +1,3 @@
+[console_scripts]
+textattack = textattack.commands.textattack_cli:main
+
