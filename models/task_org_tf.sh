@@ -1,0 +1,15 @@
+python classifier_train_org_tf.py \
+    --model_name_or_path oliverguhr/german-sentiment-bert \
+    --dataset_name mbart/rotten_tomatoes_de \
+    --do_train \
+    --do_eval \
+    --per_device_train_batch_size 32 \
+    --learning_rate 2e-5 \
+    --weight_decay 0.01 \
+    --num_train_epochs 5 \
+    --output_dir results_org_tf/rotten_tomatoes_de_mbart/ \
+    --overwrite_output_dir \
+    --evaluation_strategy epoch \
+    --save_strategy epoch \
+    --per_device_eval_batch_size 32 \
+    --load_best_model_at_end 
