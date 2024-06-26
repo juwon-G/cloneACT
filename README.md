@@ -11,10 +11,10 @@ Install [conda](https://conda.io) and run the steps below:
 $ git clone https://github.com/sssadrizadeh/ACT.git
 $ cd ACT
 $ conda env create --file=ACT.yml
+$ conda activate ACT
 $ pip install git+https://github.com/lucadiliello/bleurt-pytorch.git
 $ pip install git+https://github.com/google-research/bleurt.git
 $ pip install -e ./TextAttack/
-$ conda activate ACT
 ```
 
 The translated datsets and classifier models in different languages are available can be downloaded  from [here](https://zenodo.org/records/12533316). Please copy these files in the [`models`](models) folder. 
