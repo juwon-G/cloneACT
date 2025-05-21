@@ -41,7 +41,7 @@ class GoalFunction(ReprMixin, ABC):
         maximizable=False,
         use_cache=True,
         query_budget=float("inf"),
-        model_batch_size=32,
+        model_batch_size=8,
         model_cache_size=2**20,
     ):
         validators.validate_model_goal_function_compatibility(
@@ -103,9 +103,9 @@ class GoalFunction(ReprMixin, ABC):
         for attacked_text, raw_output in zip(attacked_text_list, model_outputs):
             displayed_output = self._get_displayed_output(raw_output)
             goal_status = self._get_goal_status(
-                raw_output, attacked_text, check_skip=check_skip
+                displayed_output, attacked_text, check_skip=check_skip
             )
-            goal_function_score = self._get_score(raw_output, attacked_text)
+            goal_function_score = self._get_score(displayed_output, attacked_text)
             results.append(
                 self._goal_function_result_type()(
                     attacked_text,

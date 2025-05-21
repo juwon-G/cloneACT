@@ -65,22 +65,33 @@ class MarianClassTr(torch.nn.Module):
             self.classifier_tokenizer1 = ClassTrTokenizer(name="moussaKam/barthez-sentiment-classification")
 
     def __call__(self, device, *args, **kwargs):
-        # Generate IDs from the model.
-        output_ids_list = self.model.generate(
-            *args,
-            **kwargs
-        )
+        input_ids = kwargs.get('input_ids', None)
+        att_mask = kwargs.get('attention_mask',None)
 
-        # Convert ID tensor to string and return.
-        NMT_output = [self.tokenizer.decode(ids) for ids in output_ids_list]
-        class_output = [self.classifier(self.classifier_tokenizer(tr,return_tensors='pt',truncation=True)['input_ids'].to(device)).logits[0] for tr in NMT_output]
-        output = [(NMT_output[i],class_output[i]) for i in range(len(NMT_output))]
+        output_ids = self.model.generate(input_ids = input_ids,attention_mask = att_mask)
+        tmp = self.model(input_ids=input_ids,decoder_input_ids=output_ids,attention_mask=att_mask,output_attentions=True)
+        org_tokens = [self.tokenizer.convert_ids_to_tokens(ids) for ids in input_ids]
+        tr_tokens = [self.tokenizer.convert_ids_to_tokens(ids) for ids in output_ids]
+        NMT_output = [self.tokenizer.decode(ids) for ids in output_ids]
+        batch_size=len(NMT_output)
+
+        def resize(att, batch, org, tr):
+            return tuple(layer[batch, :, :(tr if tr else org), :(org if org else tr)] for layer in att)
+
+        att_cro,att_dec,att_enc=[],[],[]
+        for i in range(batch_size):
+            org_size=len(org_tokens[i])
+            tr_size=len(tr_tokens[i])
+            att_enc.append(resize(tmp.encoder_attentions,i,org_size,0))
+            att_cro.append(resize(tmp.cross_attentions,i,org_size,tr_size))
+            att_dec.append(resize(tmp.decoder_attentions,i,0,tr_size))
 
         if self.num_class==2:
-            class_output1 = [self.classifier1(self.classifier_tokenizer1(tr,return_tensors='pt',truncation=True)['input_ids'].to(device)).logits[0] for tr in NMT_output]
-            output = [(NMT_output[i],class_output[i],class_output1[i]) for i in range(len(NMT_output))]
+            class_output = [self.classifier1(self.classifier_tokenizer1(tr,return_tensors='pt',truncation=True)['input_ids'].to(device)).logits[0] for tr in NMT_output]
+        else:
+            class_output = [self.classifier(self.classifier_tokenizer(tr,return_tensors='pt',truncation=True)['input_ids'].to(device)).logits[0] for tr in NMT_output]
 
-        
+        output = [(NMT_output[i],class_output[i],org_tokens[i],tr_tokens[i],att_enc[i],att_dec[i],att_cro[i]) for i in range(batch_size)]
         return output
 
 

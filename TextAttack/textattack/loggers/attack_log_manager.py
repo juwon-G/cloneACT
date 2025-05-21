@@ -59,9 +59,12 @@ class AttackLogManager:
 
     def log_result(self, result):
         """Logs an ``AttackResult`` on each of `self.loggers`."""
-        self.results.append(result)
         for logger in self.loggers:
             logger.log_attack_result(result)
+        tmp = result
+        tmp.original_result.output = [result.original_result.output[0],result.original_result.output[1]]
+        tmp.perturbed_result.output = [result.perturbed_result.output[0],result.perturbed_result.output[1]]
+        self.results.append(tmp)
 
     def log_results(self, results):
         """Logs an iterable of ``AttackResult`` objects on each of

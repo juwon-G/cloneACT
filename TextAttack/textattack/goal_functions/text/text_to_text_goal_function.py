@@ -29,4 +29,4 @@ class TextToTextGoalFunction(GoalFunction):
             return outputs
 
     def _get_displayed_output(self, raw_output):
-        return raw_output
+        return [raw_output[0],raw_output[1]]
