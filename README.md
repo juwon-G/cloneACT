@@ -1,4 +1,5 @@
-이 repository는 https://github.com/sssadrizadeh/ACT 여기서 가져왔음을 명시함
+이 프로젝트는 Apache License 2.0을 따릅니다.”
+“원본 프로젝트: [[원본 주소]](https://github.com/sssadrizadeh/ACT ) ”
 
 # ACT
 
