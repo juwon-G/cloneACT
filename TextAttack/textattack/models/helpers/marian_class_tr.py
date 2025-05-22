@@ -76,7 +76,7 @@ class MarianClassTr(torch.nn.Module):
         batch_size=len(NMT_output)
 
         def resize(att, batch, org, tr):
-            return tuple(layer[batch, :, :(tr if tr else org), :(org if org else tr)] for layer in att)
+            return tuple(layer[batch, :, :(tr if tr else org), :(org if org else tr)].clone() for layer in att)
 
         att_cro,att_dec,att_enc=[],[],[]
         for i in range(batch_size):
