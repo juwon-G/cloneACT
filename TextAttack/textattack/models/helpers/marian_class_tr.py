@@ -91,6 +91,12 @@ class MarianClassTr(torch.nn.Module):
         else:
             class_output = [self.classifier(self.classifier_tokenizer(tr,return_tensors='pt',truncation=True)['input_ids'].to(device)).logits[0] for tr in NMT_output]
 
+        del tmp
+        import gc
+        gc.collect()
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+        
         output = [(NMT_output[i],class_output[i],org_tokens[i],tr_tokens[i],att_enc[i],att_dec[i],att_cro[i]) for i in range(batch_size)]
         return output
 
