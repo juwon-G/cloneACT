@@ -14,7 +14,7 @@ from textattack.shared import AttackedText, logger
 from .logger import Logger
 import pickle
 import os
-
+import torch
 
 class CSVLogger(Logger):
     """Logs attack results to a CSV."""
@@ -60,6 +60,8 @@ class CSVLogger(Logger):
         self.count += 1
         #self.row_list.append(row)
         self._flushed = False
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
 
     def flush(self):
         #self.df = pd.DataFrame.from_records(self.row_list)
